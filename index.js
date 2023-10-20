@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3030;
 const app = express();
 
 app.use(cors());
-app.use(casinosRoutes);
+app.use("/api", casinosRoutes);
 
 async function init() {
   try {
