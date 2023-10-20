@@ -1,12 +1,13 @@
 const express = require("express");
-const serverless = require("serverless-http");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const casinosRoutes = require("./routes/casinos");
 
 const PORT = process.env.PORT || 3030;
 
 const app = express();
 
+app.use(cors());
 app.use(casinosRoutes);
 
 async function init() {
@@ -26,3 +27,5 @@ async function init() {
 }
 
 init();
+
+module.exports = app;

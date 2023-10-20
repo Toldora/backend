@@ -1,9 +1,4 @@
-const express = require("express");
 const serverless = require("serverless-http");
-const casinosRoutes = require("../../routes/casinos");
+const app = require("../../index");
 
-const api = express();
-
-api.use("/api/", casinosRoutes);
-
-export const handler = serverless(api);
+export const handler = serverless(app);
