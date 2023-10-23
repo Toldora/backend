@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
       console.log('Mac address for this host: %s', mac);
     })
     .then(() => {
-      res.json({ message: 'Hi!', address });
+      res.json({ message: 'Hi!', address, req });
     });
 });
 
