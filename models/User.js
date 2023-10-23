@@ -1,4 +1,4 @@
-const { Schema, model, Types } = require('mongoose');
+const { Schema, model, ObjectId } = require('mongoose');
 
 const schema = new Schema({
   email: {
@@ -8,7 +8,11 @@ const schema = new Schema({
   browser: {
     type: String,
   },
-  registeredOn: { type: Types.ObjectId, ref: 'Casino', required: true },
+  registeredOn: {
+    type: ObjectId,
+    ref: 'Casino',
+    // required: true,
+  },
 });
 
 module.exports = model('User', schema);
