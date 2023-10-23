@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
+const macaddress = require('macaddress');
 const User = require('../models/User');
 const Casino = require('../models/Casino');
 
@@ -11,8 +12,17 @@ const validationMiddleware = [
   // check('userAgent', 'UserAgent is empty').exists(),
 ];
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Hi!' });
+router.get('/', async (req, res) => {
+  let address = '';
+  macaddress
+    .one()
+    .then(mac => {
+      address = mac;
+      console.log('Mac address for this host: %s', mac);
+    })
+    .then(() => {
+      res.json({ message: 'Hi!', address });
+    });
 });
 
 router.post('/create', validationMiddleware, async (req, res) => {

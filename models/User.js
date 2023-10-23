@@ -11,7 +11,7 @@ const schema = new Schema({
   registeredOn: {
     type: ObjectId,
     ref: 'Casino',
-    // required: true,
+    required: true,
   },
 });
 
