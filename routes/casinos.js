@@ -47,7 +47,7 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
               message: 'this device has already been registered',
               messagePt: 'Este dispositivo já foi registrado',
             };
-      return res.status(401).json(response);
+      return res.status(400).json(response);
     }
     const newUser = new User({
       email,
