@@ -37,9 +37,17 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
       $or: [{ email }, { browserId }],
     });
     if (user) {
-      return res
-        .status(400)
-        .json({ user, message: 'This email has already been registered' });
+      const response =
+        user.email === email
+          ? {
+              message: 'This email has already been registered',
+              messagePt: 'Esse email já foi cadastrado',
+            }
+          : {
+              message: 'this device has already been registered',
+              messagePt: 'Este dispositivo já foi registrado',
+            };
+      return res.status(400).json(response);
     }
     const newUser = new User({
       email,
@@ -49,7 +57,7 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ user: newUser });
+    res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error, message: 'Something went wrong' });
   }
@@ -61,7 +69,7 @@ router.get('/:name', async (req, res) => {
 
     const casino = await Casino.findOne({ name });
     const users = await User.find({ registeredOn: casino._id });
-    res.status(200).json({ users });
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error, message: 'Something went wrong' });
   }
