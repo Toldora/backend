@@ -41,5 +41,6 @@ module.exports = {
       },
     ],
     'consistent-return': 0,
+    'object-curly-newline': 0,
   },
 };

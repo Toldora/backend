@@ -5,7 +5,10 @@ const schema = new Schema({
     type: String,
     required: true,
   },
-  browser: {
+  browserId: {
+    type: String,
+  },
+  ip: {
     type: String,
   },
   registeredOn: {

@@ -1,31 +1,18 @@
 /* eslint-disable no-underscore-dangle */
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
-const macaddress = require('macaddress');
 const User = require('../models/User');
 const Casino = require('../models/Casino');
 
 const router = Router();
 
-const validationMiddleware = [
-  check('email', 'Invalid email').isEmail(),
-  // check('userAgent', 'UserAgent is empty').exists(),
-];
+const validationMiddleware = [check('email', 'Invalid email').isEmail()];
 
 router.get('/', async (req, res) => {
-  let address = '';
-  macaddress
-    .one()
-    .then(mac => {
-      address = mac;
-      console.log('Mac address for this host: %s', mac);
-    })
-    .then(() => {
-      res.json({ message: 'Hi!', address });
-    });
+  res.json({ message: 'Hi!' });
 });
 
-router.post('/create', validationMiddleware, async (req, res) => {
+router.post('/sign-up', validationMiddleware, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -35,7 +22,7 @@ router.post('/create', validationMiddleware, async (req, res) => {
       });
     }
 
-    const { email, name } = req.body;
+    const { email, name, browserId, ip } = req.body;
 
     let casino = await Casino.findOne({ name });
     if (!casino) {
@@ -45,14 +32,19 @@ router.post('/create', validationMiddleware, async (req, res) => {
       await casino.save();
     }
 
-    const user = await User.findOne({ email, registeredOn: casino._id });
+    const user = await User.findOne({
+      registeredOn: casino._id,
+      $or: [email, browserId],
+    });
     if (user) {
       return res
         .status(400)
-        .json({ message: 'This email has already been registered' });
+        .json({ user, message: 'This email has already been registered' });
     }
     const newUser = new User({
       email,
+      ip,
+      browserId,
       registeredOn: casino._id,
     });
 
