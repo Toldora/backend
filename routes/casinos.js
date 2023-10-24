@@ -34,7 +34,7 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
 
     const user = await User.findOne({
       registeredOn: casino._id,
-      $or: [email, browserId],
+      $or: [{ email }, { browserId }],
     });
     if (user) {
       return res
