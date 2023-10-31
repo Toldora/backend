@@ -2,6 +2,7 @@
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
 const XLSX = require('xlsx');
+const fs = require('fs');
 const User = require('../models/User');
 const Casino = require('../models/Casino');
 
@@ -102,9 +103,11 @@ router.get('/excel', async (req, res) => {
       counter += users.length;
     });
 
+    const appDirectory = fs.realpathSync(process.cwd());
+
     XLSX.utils.book_append_sheet(wb, ws);
-    const filePath = __dirname + '/tmp/Report.xlsx';
-    XLSX.writeFile(wb, filePath);
+    XLSX.writeFile(wb, 'downloads/Report.xlsx');
+    const filePath = appDirectory + '/downloads/Report.xlsx';
     res.download(filePath);
   } catch (error) {
     res
