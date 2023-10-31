@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
+const XLSX = require('xlsx');
 const User = require('../models/User');
 const Casino = require('../models/Casino');
 
@@ -60,6 +61,55 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error, message: 'Something went wrong' });
+  }
+});
+
+router.get('/excel', async (req, res) => {
+  try {
+    const casinos = await Casino.find();
+    const users = await User.find();
+    const normalizedUsers = users.map(
+      ({ email, ip, browserId, registeredOn }) => {
+        const casino = casinos.find(
+          casino => casino._id.toJSON() === registeredOn.toJSON(),
+        );
+        return {
+          casino: casino.name,
+          email,
+          ip,
+          browserId,
+        };
+      },
+    );
+
+    const groupedUsers = normalizedUsers.reduce(function (r, a) {
+      r[a.casino] = r[a.casino] || [];
+      r[a.casino].push(a);
+      return r;
+    }, {});
+
+    const entries = Object.entries(groupedUsers);
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet([]);
+
+    let counter = 1;
+    entries.forEach(([_, users], index) => {
+      XLSX.utils.sheet_add_json(ws, users, {
+        skipHeader: Boolean(index),
+        origin: { c: 0, r: Boolean(index) ? counter : 0 },
+      });
+
+      counter += users.length;
+    });
+
+    XLSX.utils.book_append_sheet(wb, ws);
+    XLSX.writeFile(wb, 'downloads/Report.xlsx');
+    const filePath = __dirname + '/../downloads/Report.xlsx';
+    res.download(filePath);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error.toString(), message: 'Something went wrong' });
   }
 });
 
