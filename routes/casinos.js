@@ -63,6 +63,27 @@ router.post('/sign-up', validationMiddleware, async (req, res) => {
   }
 });
 
+router.get('/statistics', async (req, res) => {
+  try {
+    const casinos = await Casino.find();
+    const users = await User.find();
+    const result = users.reduce((acc, user) => {
+      const casino = casinos.find(
+        casino => casino._id.toJSON() === user.registeredOn.toJSON(),
+      );
+      if (acc[casino.name]) {
+        acc[casino.name] = acc[casino.name] + 1;
+      } else {
+        acc[casino.name] = 1;
+      }
+      return acc;
+    }, {});
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error, message: 'Something went wrong' });
+  }
+});
+
 router.get('/:name', async (req, res) => {
   try {
     const { name } = req.params;
