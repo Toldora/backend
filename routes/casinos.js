@@ -103,8 +103,8 @@ router.get('/excel', async (req, res) => {
     });
 
     XLSX.utils.book_append_sheet(wb, ws);
-    XLSX.writeFile(wb, 'downloads/Report.xlsx');
-    const filePath = __dirname + '/../downloads/Report.xlsx';
+    const filePath = __dirname + '/Report.xlsx';
+    XLSX.writeFile(wb, filePath);
     res.download(filePath);
   } catch (error) {
     res
