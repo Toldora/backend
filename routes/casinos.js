@@ -2,7 +2,7 @@
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
 const XLSX = require('xlsx');
-const fs = require('fs');
+const stream = require('stream');
 const User = require('../models/User');
 const Casino = require('../models/Casino');
 
@@ -103,16 +103,20 @@ router.get('/excel', async (req, res) => {
       counter += users.length;
     });
 
-    const appDirectory = fs.realpathSync(process.cwd());
-
     XLSX.utils.book_append_sheet(wb, ws);
-    XLSX.writeFile(wb, 'downloads/Report.xlsx');
-    const filePath = appDirectory + '/downloads/Report.xlsx';
-    res.download(filePath);
+    const buffer = XLSX.write(wb, {
+      type: 'buffer',
+    });
+    const readStream = new stream.PassThrough();
+    readStream.end(buffer);
+
+    res.set('Content-disposition', 'attachment; filename=' + 'Report.xlsx');
+    readStream.pipe(res);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: error.toString(), message: 'Something went wrong' });
+    res.status(500).json({
+      error: error.toString(),
+      message: 'Something went wrong',
+    });
   }
 });
 
