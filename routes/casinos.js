@@ -110,7 +110,14 @@ router.get('/excel', async (req, res) => {
     const readStream = new stream.PassThrough();
     readStream.end(buffer);
 
-    res.set('Content-disposition', 'attachment; filename=' + 'Report.xlsx');
+    res.setHeader(
+      'Content-disposition',
+      'attachment; filename=' + 'Report.xlsx',
+    );
+    res.setHeader(
+      'Content-type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
     readStream.pipe(res);
   } catch (error) {
     res.status(500).json({
