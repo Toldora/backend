@@ -70,13 +70,15 @@ router.get('/excel', async (req, res) => {
     const casinos = await Casino.find();
     const users = await User.find();
     const normalizedUsers = users.map(
-      ({ email, ip, browserId, registeredOn }) => {
+      ({ email, ip, browserId, registeredOn, _id }) => {
         const casino = casinos.find(
           casino => casino._id.toJSON() === registeredOn.toJSON(),
         );
+        const registrationDate = _id.getTimestamp();
         return {
           casino: casino.name,
           email,
+          registrationDate,
           ip,
           browserId,
         };
